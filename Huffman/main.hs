@@ -8,25 +8,30 @@ main = do
 	if length args < 3 then
 		putStrLn "Inappropriate number of arguments!"
 	else do
-		let (command:fileName:outFilename:_) = args
+		let (command:fileName:outFilename:xs) = args
 		putStrLn $ "Operation: " ++ command
+		putStrLn $ "Source: " ++ fileName
+		putStrLn $ "Destination: " ++ outFilename
+		
 		if command == "encode" then do
-			putStrLn $ "Source: " ++ fileName
 			str <- readFile fileName
-			let a = (read str :: [Int])
-			print a
-			putStrLn $ "Destination: " ++ outFilename
-			writeFile outFilename $ (show $ snd $ compress (==) a) 
-				++ "\n" ++ (fst $ compress (==) a)
+			let typeToCode = head xs
+			if typeToCode == "Int" then do
+				let a = (read str :: [Int])
+				let res = compress (==) str
+				writeFile outFilename $ typeToCode ++ "\n"
+					++ (show (snd $ compress (==) a)) ++ "\n" ++ (fst $ compress (==) a)
+			else do
+				let res = compress (==) str
+				writeFile outFilename $ typeToCode ++ "\n"
+					++ (show (snd res)) ++ "\n" ++ (fst res)
 		else do
-			putStrLn $ "Source: " ++ fileName
 			str <- readFile fileName
-			let a = lines str
-			--print a
-			putStrLn $ "Destination: " ++ outFilename
-			let t = (read (head a) :: Tree Int)
-			print $ show t
-			let cod = a !! 1
-			print cod
-			writeFile outFilename $ show (genFromHuffman cod t)
+			let (marker:tree:cod:_) = lines str
+			if marker == "Int" then do
+				let t = (read tree :: Tree Int)
+				writeFile outFilename $ show (genFromHuffman cod t)
+			else do
+				let t = (read tree :: Tree Char)
+				writeFile outFilename $ (genFromHuffman cod t)
 		putStrLn $ "done."

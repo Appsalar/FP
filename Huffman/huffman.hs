@@ -7,7 +7,7 @@ insertFreqLst f el (x:xs)
 	| f el $ fst x = (fst x, snd x + 1):xs
 	| otherwise = x:insertFreqLst f el xs
 
-freqCnt::(a -> a -> Bool)-> [a] -> [(a, Int)] -> [(a, Int)]
+freqCnt:: (a -> a -> Bool)-> [a] -> [(a, Int)] -> [(a, Int)]
 freqCnt _ [] cont = cont
 freqCnt f (x:xs) cont = freqCnt f xs $ insertFreqLst f x cont
 
@@ -24,7 +24,7 @@ t = (Node 12
 			(Leaf 'd' 123))))
 -}
 
-getFreq::Tree a -> Int
+getFreq:: Tree a -> Int
 getFreq ET = 0
 getFreq (Leaf _ x) = x
 getFreq (Node x _ _) = x
@@ -52,7 +52,7 @@ genHuffmanCode (Node _ lt rt) =
 		(genSingleCode lt (code ++ "0") ) ++ (genSingleCode rt (code ++ "1"))
 	genSingleCode (Leaf x _) code = [(x, code)]
 
-genCompressed::  (a -> a -> Bool)-> [a] -> [(a, String)] -> String
+genCompressed:: (a -> a -> Bool)-> [a] -> [(a, String)] -> String
 genCompressed _ [] _ = []
 genCompressed f (x:xs) cont = lookupDummyMap f x cont ++ genCompressed f xs cont where
 	lookupDummyMap _ _ [] = []
@@ -60,7 +60,7 @@ genCompressed f (x:xs) cont = lookupDummyMap f x cont ++ genCompressed f xs cont
 		| f el $ fst x = snd x
 		| otherwise = lookupDummyMap f el xs
 
-compress::(a -> a -> Bool)-> [a] -> (String, Tree a)
+compress:: (a -> a -> Bool)-> [a] -> (String, Tree a)
 compress f str = (genCompressed f str $ genHuffmanCode ht, ht) where
 	ht = createHuffmanTree $ genLeafs $ freqCnt f str []
 
