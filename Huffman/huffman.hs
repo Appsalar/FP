@@ -1,9 +1,5 @@
-import qualified Data.Map as Map 
-import qualified Data.Maybe as Mb
-import qualified Data.List as List
-
-foo::Map.Map Char Int
-foo = Map.fromList []
+module Huffman where
+import Data.List (sort)
 
 insertFreqLst:: (a -> a -> Bool)-> a -> [(a, Int)] -> [(a, Int)]
 insertFreqLst _ el [] = [(el,1)]
@@ -15,9 +11,10 @@ freqCnt::(a -> a -> Bool)-> [a] -> [(a, Int)] -> [(a, Int)]
 freqCnt _ [] cont = cont
 freqCnt f (x:xs) cont = freqCnt f xs $ insertFreqLst f x cont
 
-data Tree a = ET | Leaf a Int | Node Int (Tree a) (Tree a) deriving Show
+data Tree a = ET | Leaf a Int | Node Int (Tree a) (Tree a) deriving (Show, Read)
 
-t::Tree Char
+--Dummy test
+{-t::Tree Char
 t = (Node 12
 	(Leaf 'a' 5)
 	(Node 123
@@ -25,6 +22,7 @@ t = (Node 12
 		(Node 123
 			(Leaf 'c' 12)
 			(Leaf 'd' 123))))
+-}
 
 getFreq::Tree a -> Int
 getFreq ET = 0
@@ -41,11 +39,11 @@ genLeafs cont = map (\ (key, freq)-> (Leaf key freq)) cont
 
 createHuffmanTree:: [Tree a] -> Tree a
 createHuffmanTree [] = ET
-createHuffmanTree lst = head $ helper $ List.sort lst where
+createHuffmanTree lst = head $ helper $ sort lst where
 	createNode l r = (Node (getFreq l + getFreq r) r l)
 	helper (x:xs)
 		| null xs = [x]
-		| otherwise = helper $ List.sort ((createNode x $ head xs) : tail xs)
+		| otherwise = helper $ sort ((createNode x $ head xs) : tail xs)
 
 genHuffmanCode:: Tree a -> [(a, String)]
 genHuffmanCode (Node _ lt rt) = 
@@ -62,10 +60,11 @@ genCompressed f (x:xs) cont = lookupDummyMap f x cont ++ genCompressed f xs cont
 		| f el $ fst x = snd x
 		| otherwise = lookupDummyMap f el xs
 
-compress f str = genCompressed f str
-	$ genHuffmanCode $ createHuffmanTree $ genLeafs $ freqCnt f str []
+compress::(a -> a -> Bool)-> [a] -> (String, Tree a)
+compress f str = (genCompressed f str $ genHuffmanCode ht, ht) where
+	ht = createHuffmanTree $ genLeafs $ freqCnt f str []
 
-
+genFromHuffman:: String -> Tree a -> [a]
 genFromHuffman str tree = genFromCompress str tree where
 	genFromCompress lst (Leaf x _) = x:genFromCompress lst tree
 	genFromCompress [] _ = []
