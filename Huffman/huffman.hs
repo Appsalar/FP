@@ -60,10 +60,15 @@ genCompressed f (x:xs) cont = lookupDummyMap f x cont ++ genCompressed f xs cont
 		| f el $ fst x = snd x
 		| otherwise = lookupDummyMap f el xs
 
+-- Приема предикат за сравнение и списък, по които
+-- връща кодирата наредена двойка от кодираната
+-- информация и Хъфмановото дърво
 compress:: (a -> a -> Bool)-> [a] -> (String, Tree a)
 compress f str = (genCompressed f str $ genHuffmanCode ht, ht) where
 	ht = createHuffmanTree $ genLeafs $ freqCnt f str []
 
+-- Приема кодираната информация и дърво, по което 
+-- възтановява съдържанието
 genFromHuffman:: String -> Tree a -> [a]
 genFromHuffman str tree = genFromCompress str tree where
 	genFromCompress lst (Leaf x _) = x:genFromCompress lst tree

@@ -3,6 +3,18 @@ import Huffman
 import System.Environment (getArgs)
 import System.IO (writeFile)
 
+-- програмата работи с конзолни параметри
+-- първият параметър е операцията, която ще 
+-- се изпълнява вариантите са: 
+-- encode и decode
+-- след което приема имена на входен и изходен файл,
+-- ако операцията е encode, трябва да бъде даден 4-ти 
+-- аргумент, който е типа на данните, които ще бъдат кодирани 
+-- като в момента работи само за Int, а с всичко останало
+-- като Char 
+-- примери: 
+-- main encode <source file> <destination file> <dataType>
+-- main decode <source file> <destination file>
 main = do 
 	args <- getArgs
 	if length args < 3 then
